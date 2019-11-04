@@ -1,0 +1,117 @@
+Warning: Using a password on the command line interface can be insecure.
+--------------
+SHOW DATABASES
+--------------
+
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| jflaischassign2db  |
+| mysql              |
+| performance_schema |
+| vetoffice          |
++--------------------+
+5 rows in set (0.00 sec)
+
+--------------
+DROP DATABASE IF EXISTS jflaischassign2db
+--------------
+
+Query OK, 9 rows affected (0.14 sec)
+
+--------------
+CREATE DATABASE jflaischassign2db
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+GRANT USAGE ON *.* TO 'ta'@'localhost'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+DROP USER 'ta'@'localhost'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+CREATE USER 'ta'@'localhost' IDENTIFIED BY 'cs3319'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+GRANT ALL PRIVILEGES ON yourwesternuseridassign2db.* TO 'ta'@'localhost'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+FLUSH PRIVILEGES
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SHOW TABLES
+--------------
+
+Empty set (0.00 sec)
+
+--------------
+CREATE TABLE Patient (OHIPNum INT NOT NULL, FName VARCHAR(20), LName VARCHAR(20), PRIMARY KEY (OHIPNum))
+--------------
+
+Query OK, 0 rows affected (0.15 sec)
+
+--------------
+CREATE TABLE Doctor (LicNum CHAR(4) NOT NULL, FName VARCHAR(20), LName VARCHAR(20), Specialty VARCHAR(30), LicDate DATE, HospitalCode CHAR(3), PRIMARY KEY (LicNum))
+--------------
+
+Query OK, 0 rows affected (0.06 sec)
+
+--------------
+CREATE TABLE Hospital (HospitalCode CHAR(3) NOT NULL, Name VARCHAR(20), City VARCHAR(20), Province CHAR(2), NumBeds INT, HeadLicNum CHAR(4), HeadStartDate DATE, PRIMARY KEY(HospitalCode))
+--------------
+
+Query OK, 0 rows affected (0.13 sec)
+
+--------------
+CREATE TABLE Assigned (OHIPNum INT NOT NULL, LicNum CHAR(4) NOT NULL, PRIMARY KEY (OHIPNum, LicNum), FOREIGN KEY (OHIPNum) REFERENCES Patient(OHIPNum), FOREIGN KEY (LicNum) REFERENCES Doctor(LicNum) ON DELETE CASCADE)
+--------------
+
+Query OK, 0 rows affected (0.06 sec)
+
+--------------
+ALTER TABLE Doctor ADD FOREIGN KEY (HospitalCode) REFERENCES Hospital(HospitalCode)
+--------------
+
+Query OK, 0 rows affected (0.24 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+ALTER TABLE Hospital ADD FOREIGN KEY (HeadLicNum) REFERENCES Doctor(LicNum)
+--------------
+
+Query OK, 0 rows affected (0.13 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+SHOW TABLES
+--------------
+
++-----------------------------+
+| Tables_in_jflaischassign2db |
++-----------------------------+
+| Assigned                    |
+| Doctor                      |
+| Hospital                    |
+| Patient                     |
++-----------------------------+
+4 rows in set (0.00 sec)
+
+Bye

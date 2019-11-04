@@ -1,0 +1,25 @@
+-- Jflaisch Script 1
+
+-- build the database
+SHOW DATABASES;
+DROP DATABASE IF EXISTS jflaischassign2db;
+CREATE DATABASE jflaischassign2db;
+USE jflaischassign2db;
+
+-- allow ta access to database
+GRANT USAGE ON *.* TO 'ta'@'localhost';
+DROP USER 'ta'@'localhost';
+CREATE USER 'ta'@'localhost' IDENTIFIED BY 'cs3319';
+GRANT ALL PRIVILEGES ON yourwesternuseridassign2db.* TO 'ta'@'localhost';
+FLUSH PRIVILEGES;
+
+-- create the tables
+SHOW TABLES;
+CREATE TABLE Patient (OHIPNum INT NOT NULL, FName VARCHAR(20), LName VARCHAR(20), PRIMARY KEY (OHIPNum));
+CREATE TABLE Doctor (LicNum CHAR(4) NOT NULL, FName VARCHAR(20), LName VARCHAR(20), Specialty VARCHAR(30), LicDate DATE, HospitalCode CHAR(3), PRIMARY KEY (LicNum));
+CREATE TABLE Hospital (HospitalCode CHAR(3) NOT NULL, Name VARCHAR(20), City VARCHAR(20), Province CHAR(2), NumBeds INT, HeadLicNum CHAR(4), HeadStartDate DATE, PRIMARY KEY(HospitalCode));
+CREATE TABLE Assigned (OHIPNum INT NOT NULL, LicNum CHAR(4) NOT NULL, PRIMARY KEY (OHIPNum, LicNum), FOREIGN KEY (OHIPNum) REFERENCES Patient(OHIPNum), FOREIGN KEY (LicNum) REFERENCES Doctor(LicNum) ON DELETE CASCADE);
+ALTER TABLE Doctor ADD FOREIGN KEY (HospitalCode) REFERENCES Hospital(HospitalCode);
+ALTER TABLE Hospital ADD FOREIGN KEY (HeadLicNum) REFERENCES Doctor(LicNum);
+SHOW TABLES;
+

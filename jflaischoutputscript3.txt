@@ -1,0 +1,220 @@
+Warning: Using a password on the command line interface can be insecure.
+--------------
+SHOW DATABASES
+--------------
+
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| jflaischassign2db  |
+| mysql              |
+| performance_schema |
+| vetoffice          |
++--------------------+
+5 rows in set (0.00 sec)
+
+--------------
+SELECT LName FROM Patient
+--------------
+
++---------+
+| LName   |
++---------+
+| Gellar  |
+| Brown   |
+| Green   |
+| Gellar  |
+| Gellar  |
+| Bing    |
+| Flaisch |
++---------+
+7 rows in set (0.00 sec)
+
+--------------
+SELECT DISTINCT LName FROM Patient
+--------------
+
++---------+
+| LName   |
++---------+
+| Gellar  |
+| Brown   |
+| Green   |
+| Bing    |
+| Flaisch |
++---------+
+5 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM Doctor ORDER BY LName
+--------------
+
++--------+---------+------------+--------------+------------+--------------+
+| LicNum | FName   | LName      | Specialty    | LicDate    | HospitalCode |
++--------+---------+------------+--------------+------------+--------------+
+| SE66   | Colleen | Aziz       | Surgeon      | 1989-08-24 | ABC          |
+| HT45   | Ross    | Clooney    | Surgeon      | 1987-06-20 | DDE          |
+| RD34   | Bernie  | Kavorikian | Urologist    | 1980-09-09 | BBC          |
+| GD56   | Joey    | Shabado    | Podiatrist   | 1999-09-10 | BBC          |
+| YT67   | Ben     | Spock      | Pediatrician | 1955-02-20 | DDE          |
+| JK78   | Mandy   | Webster    | Surgeon      | 1990-08-08 | BBC          |
+| AB12   | John    | Zoidberg   | Surgeon      | 1999-01-17 | ABC          |
++--------+---------+------------+--------------+------------+--------------+
+7 rows in set (0.00 sec)
+
+--------------
+SELECT Name, HospitalCode FROM Hospital WHERE NumBeds>1500
+--------------
+
++----------+--------------+
+| Name     | HospitalCode |
++----------+--------------+
+| Victoria | ABC          |
++----------+--------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT FName, LName FROM Doctor WHERE HospitalCode IN (SELECT HospitalCode FROM Hospital WHERE Name='St. Joseph')
+--------------
+
++--------+------------+
+| FName  | LName      |
++--------+------------+
+| Joey   | Shabado    |
+| Mandy  | Webster    |
+| Bernie | Kavorikian |
++--------+------------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT FName, LName FROM Patient WHERE LName LIKE 'G%'
+--------------
+
++---------+--------+
+| FName   | LName  |
++---------+--------+
+| Bill    | Gellar |
+| Jon     | Green  |
+| Colleen | Gellar |
+| Sean    | Gellar |
++---------+--------+
+4 rows in set (0.00 sec)
+
+--------------
+DROP VIEW IF EXISTS ClooneyPatients
+--------------
+
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+--------------
+CREATE VIEW ClooneyPatients AS SELECT OHIPNum FROM Assigned WHERE LicNum IN (SELECT LicNum FROM Doctor WHERE LName='Clooney')
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+SELECT FName, LName FROM Patient WHERE OHIPNum IN (SELECT OHIPNum FROM ClooneyPatients)
+--------------
+
++--------+---------+
+| FName  | LName   |
++--------+---------+
+| Suzi   | Brown   |
+| Jon    | Green   |
+| Sean   | Gellar  |
+| Scotty | Bing    |
+| Julia  | Flaisch |
++--------+---------+
+5 rows in set (0.00 sec)
+
+--------------
+SELECT Name, City, LName FROM Hospital, Doctor WHERE HeadLicNum=LicNum
+--------------
+
++------------+----------+---------+
+| Name       | City     | LName   |
++------------+----------+---------+
+| Victoria   | London   | Aziz    |
+| St. Joseph | London   | Shabado |
+| Victoria   | Victoria | Spock   |
++------------+----------+---------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT SUM(NumBeds) AS 'Total Number of Beds' FROM Hospital
+--------------
+
++----------------------+
+| Total Number of Beds |
++----------------------+
+|                 3800 |
++----------------------+
+1 row in set (0.00 sec)
+
+--------------
+DROP VIEW IF EXISTS HeadDoc
+--------------
+
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+--------------
+CREATE VIEW HeadDoc AS SELECT FName,LicNum FROM Doctor WHERE LicNum IN(SELECT HeadLicNum AS 'LicNum' FROM Hospital)
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SELECT Patient.FName, HeadDoc.FName FROM Patient, HeadDoc, Assigned WHERE Patient.OHIPNum=Assigned.OHIPNum AND HeadDoc.LicNum=Assigned.LicNum
+--------------
+
++---------+---------+
+| FName   | FName   |
++---------+---------+
+| Bill    | Joey    |
+| Jon     | Colleen |
+| Colleen | Joey    |
+| Scotty  | Joey    |
++---------+---------+
+4 rows in set (0.00 sec)
+
+--------------
+SELECT FName, LName FROM Doctor WHERE Specialty='Surgeon' AND  HospitalCode IN (SELECT HospitalCode FROM Hospital WHERE Name='Victoria')
+--------------
+
++---------+----------+
+| FName   | LName    |
++---------+----------+
+| John    | Zoidberg |
+| Ross    | Clooney  |
+| Colleen | Aziz     |
++---------+----------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT FName FROM Doctor WHERE Doctor.LicNum NOT IN (SELECT LicNum FROM Assigned)
+--------------
+
++--------+
+| FName  |
++--------+
+| John   |
+| Bernie |
+| Ben    |
++--------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT LName, FName FROM Doctor, Assigned WHERE Doctor.LicNum=Assigned.LicNum GROUP BY Assigned.LicNum HAVING COUNT(Assigned.OHIPNum) > 1
+--------------
+
++---------+-------+
+| LName   | FName |
++---------+-------+
+| Shabado | Joey  |
+| Clooney | Ross  |
+| Webster | Mandy |
++---------+-------+
+3 rows in set (0.00 sec)
+
+Bye

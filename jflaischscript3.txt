@@ -1,0 +1,50 @@
+-- Switch to correct database
+SHOW DATABASES;
+USE jflaischassign2db;
+
+-- Query 1
+SELECT LName FROM Patient;
+
+-- Query 2
+SELECT DISTINCT LName FROM Patient;
+
+-- Query 3
+SELECT * FROM Doctor ORDER BY LName;
+
+-- Query 4
+SELECT Name, HospitalCode FROM Hospital WHERE NumBeds>1500;
+
+-- Query 5
+SELECT FName, LName FROM Doctor WHERE HospitalCode IN (SELECT HospitalCode FROM Hospital WHERE Name='St. Joseph');
+
+-- Query 6
+SELECT FName, LName FROM Patient WHERE LName LIKE 'G%';
+
+-- Query 7
+DROP VIEW IF EXISTS ClooneyPatients;
+CREATE VIEW ClooneyPatients AS SELECT OHIPNum FROM Assigned WHERE LicNum IN (SELECT LicNum FROM Doctor WHERE LName='Clooney');
+SELECT FName, LName FROM Patient WHERE OHIPNum IN (SELECT OHIPNum FROM ClooneyPatients);
+
+-- Query 8
+SELECT Name, City, LName FROM Hospital, Doctor WHERE HeadLicNum=LicNum;
+
+-- Query 9
+SELECT SUM(NumBeds) AS 'Total Number of Beds' FROM Hospital;
+
+-- Query 10
+-- View is made with head doctor's first names and License Numbers, if the view exists it's deleted before this one is created
+DROP VIEW IF EXISTS HeadDoc;
+CREATE VIEW HeadDoc AS SELECT FName,LicNum FROM Doctor WHERE LicNum IN(SELECT HeadLicNum AS 'LicNum' FROM Hospital);
+SELECT Patient.FName, HeadDoc.FName FROM Patient, HeadDoc, Assigned WHERE Patient.OHIPNum=Assigned.OHIPNum AND HeadDoc.LicNum=Assigned.LicNum;
+
+-- Query 11
+SELECT FName, LName FROM Doctor WHERE Specialty='Surgeon' AND  HospitalCode IN (SELECT HospitalCode FROM Hospital WHERE Name='Victoria');
+
+-- Query 12
+SELECT FName FROM Doctor WHERE Doctor.LicNum NOT IN (SELECT LicNum FROM Assigned);
+
+-- Query 13
+SELECT LName, FName FROM Doctor, Assigned WHERE Doctor.LicNum=Assigned.LicNum GROUP BY Assigned.LicNum HAVING COUNT(Assigned.OHIPNum) > 1;
+
+
+
