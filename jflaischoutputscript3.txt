@@ -102,19 +102,7 @@ SELECT FName, LName FROM Patient WHERE LName LIKE 'G%'
 4 rows in set (0.00 sec)
 
 --------------
-DROP VIEW IF EXISTS ClooneyPatients
---------------
-
-Query OK, 0 rows affected, 1 warning (0.00 sec)
-
---------------
-CREATE VIEW ClooneyPatients AS SELECT OHIPNum FROM Assigned WHERE LicNum IN (SELECT LicNum FROM Doctor WHERE LName='Clooney')
---------------
-
-Query OK, 0 rows affected (0.01 sec)
-
---------------
-SELECT FName, LName FROM Patient WHERE OHIPNum IN (SELECT OHIPNum FROM ClooneyPatients)
+SELECT Patient.FName, Patient.LName FROM Patient, Assigned, Doctor WHERE Doctor.LName='Clooney' AND Doctor.LicNum=Assigned.LicNum AND Patient.OHIPNum=Assigned.OHIPNum
 --------------
 
 +--------+---------+
@@ -153,28 +141,16 @@ SELECT SUM(NumBeds) AS 'Total Number of Beds' FROM Hospital
 1 row in set (0.00 sec)
 
 --------------
-DROP VIEW IF EXISTS HeadDoc
---------------
-
-Query OK, 0 rows affected, 1 warning (0.00 sec)
-
---------------
-CREATE VIEW HeadDoc AS SELECT FName,LicNum FROM Doctor WHERE LicNum IN(SELECT HeadLicNum AS 'LicNum' FROM Hospital)
---------------
-
-Query OK, 0 rows affected (0.00 sec)
-
---------------
-SELECT Patient.FName, HeadDoc.FName FROM Patient, HeadDoc, Assigned WHERE Patient.OHIPNum=Assigned.OHIPNum AND HeadDoc.LicNum=Assigned.LicNum
+SELECT Patient.FName, Doctor.FName AS 'Doctor' FROM Patient, Doctor, Assigned, Hospital WHERE Patient.OHIPNum=Assigned.OHIPNum AND Doctor.LicNum=Assigned.LicNum AND Hospital.HeadLicNum=Doctor.LicNum
 --------------
 
 +---------+---------+
-| FName   | FName   |
+| FName   | Doctor  |
 +---------+---------+
 | Bill    | Joey    |
-| Jon     | Colleen |
 | Colleen | Joey    |
 | Scotty  | Joey    |
+| Jon     | Colleen |
 +---------+---------+
 4 rows in set (0.00 sec)
 

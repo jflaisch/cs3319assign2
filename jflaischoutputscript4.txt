@@ -99,7 +99,7 @@ SELECT * FROM Hospital
 | BBC          | St. Joseph | London   | ON       |    1000 | GD56       | 1999-09-10    |
 | DDE          | Victoria   | Victoria | BC       |    1200 | YT67       | 1997-12-07    |
 +--------------+------------+----------+----------+---------+------------+---------------+
-3 rows in set (0.01 sec)
+3 rows in set (0.00 sec)
 
 --------------
 SELECT * FROM Assigned
@@ -133,7 +133,7 @@ Query OK, 0 rows affected, 1 warning (0.00 sec)
 CREATE VIEW HeadView AS SELECT Patient.FName, Patient.LName, Doctor.LName AS 'Doctor', Name FROM Patient, Doctor, Assigned, Hospital WHERE Doctor.LicNum IN (SELECT HeadLicNum FROM Hospital WHERE DATE(HeadStartDate) > '1995-12-31') AND Patient.OHIPNum=Assigned.OHIPNum AND Doctor.LicNum=Assigned.LicNum AND Hospital.HeadLicNum=Doctor.LicNum
 --------------
 
-Query OK, 0 rows affected (0.00 sec)
+Query OK, 0 rows affected (0.01 sec)
 
 --------------
 SELECT * FROM HeadView

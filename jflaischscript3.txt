@@ -21,9 +21,7 @@ SELECT FName, LName FROM Doctor WHERE HospitalCode IN (SELECT HospitalCode FROM 
 SELECT FName, LName FROM Patient WHERE LName LIKE 'G%';
 
 -- Query 7
-DROP VIEW IF EXISTS ClooneyPatients;
-CREATE VIEW ClooneyPatients AS SELECT OHIPNum FROM Assigned WHERE LicNum IN (SELECT LicNum FROM Doctor WHERE LName='Clooney');
-SELECT FName, LName FROM Patient WHERE OHIPNum IN (SELECT OHIPNum FROM ClooneyPatients);
+SELECT Patient.FName, Patient.LName FROM Patient, Assigned, Doctor WHERE Doctor.LName='Clooney' AND Doctor.LicNum=Assigned.LicNum AND Patient.OHIPNum=Assigned.OHIPNum;
 
 -- Query 8
 SELECT Name, City, LName FROM Hospital, Doctor WHERE HeadLicNum=LicNum;
@@ -32,10 +30,7 @@ SELECT Name, City, LName FROM Hospital, Doctor WHERE HeadLicNum=LicNum;
 SELECT SUM(NumBeds) AS 'Total Number of Beds' FROM Hospital;
 
 -- Query 10
--- View is made with head doctor's first names and License Numbers, if the view exists it's deleted before this one is created
-DROP VIEW IF EXISTS HeadDoc;
-CREATE VIEW HeadDoc AS SELECT FName,LicNum FROM Doctor WHERE LicNum IN(SELECT HeadLicNum AS 'LicNum' FROM Hospital);
-SELECT Patient.FName, HeadDoc.FName FROM Patient, HeadDoc, Assigned WHERE Patient.OHIPNum=Assigned.OHIPNum AND HeadDoc.LicNum=Assigned.LicNum;
+SELECT Patient.FName, Doctor.FName AS 'Doctor' FROM Patient, Doctor, Assigned, Hospital WHERE Patient.OHIPNum=Assigned.OHIPNum AND Doctor.LicNum=Assigned.LicNum AND Hospital.HeadLicNum=Doctor.LicNum;
 
 -- Query 11
 SELECT FName, LName FROM Doctor WHERE Specialty='Surgeon' AND  HospitalCode IN (SELECT HospitalCode FROM Hospital WHERE Name='Victoria');
